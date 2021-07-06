@@ -5,7 +5,7 @@
 
 from logging import getLogger
 
-from odoo import SUPERUSER_ID, api, fields, models
+from odoo import api, fields, models
 from odoo.osv.expression import FALSE_DOMAIN, NEGATIVE_TERM_OPERATORS, OR, TRUE_DOMAIN
 
 _logger = getLogger(__name__)
@@ -66,7 +66,7 @@ class DmsSecurityMixin(models.AbstractModel):
         ⚠ Not very performant; only display field on form views.
         """
         # Superuser unrestricted 🦸
-        if self.env.uid == SUPERUSER_ID:
+        if self.env.su:
             self.update(
                 {
                     "permission_create": True,
@@ -94,7 +94,7 @@ class DmsSecurityMixin(models.AbstractModel):
     @api.model
     def _get_domain_by_inheritance(self, operation):
         """Get domain for inherited accessible records."""
-        if self.env.uid == SUPERUSER_ID:
+        if self.env.su:
             return []
         inherited_access_field = "storage_id_inherit_access_from_parent_record"
         if self._name != "dms.directory":
@@ -111,7 +111,8 @@ class DmsSecurityMixin(models.AbstractModel):
         )
         for group in related_groups:
             try:
-                model = self.env[group["res_model"]].with_user(self.env.uid)
+                # model = self.env[group["res_model"]].with_user(self.env.uid)
+                model = self.env[group["res_model"]]
             except KeyError:
                 # Model not registered. This is normal if you are upgrading the
                 # database. Otherwise, you probably have garbage DMS data.
@@ -184,16 +185,24 @@ class DmsSecurityMixin(models.AbstractModel):
     @api.model
     def _get_permission_domain(self, operator, value, operation):
         """Abstract logic for searching computed permission fields."""
+        _self = self
+        # HACK While computing ir.rule domain, you're always superuser, so if
+        # you're superuser but `value` is an `int`, we can assume safely that
+        # you're checking permissions for another user (see the corresponding
+        # rules in `security.xml`)
+        if self.env.su and value == self.env.uid:
+            _self = self.sudo(False)
+            value = bool(value)
         # Tricky one, to know if you want to search
         # positive or negative access
         positive = (operator not in NEGATIVE_TERM_OPERATORS) == bool(value)
-        if self.env.uid == SUPERUSER_ID:
+        if _self.env.su:
             return TRUE_DOMAIN if positive else FALSE_DOMAIN
         # Obtain and combine domains
         result = OR(
             [
-                self._get_domain_by_access_groups(operation),
-                self._get_domain_by_inheritance(operation),
+                _self._get_domain_by_access_groups(operation),
+                _self._get_domain_by_inheritance(operation),
             ]
         )
         if not positive:
@@ -215,3 +224,13 @@ class DmsSecurityMixin(models.AbstractModel):
     @api.model
     def _search_permission_write(self, operator, value):
         return self._get_permission_domain(operator, value, "write")
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super(DmsSecurityMixin, self.sudo()).create(vals_list)
+        # res = res.with_user(self.env.user)
+        res.flush()
+        res = res.sudo(False)
+        res.check_access_rights("create")
+        res.check_access_rule("create")
+        return res

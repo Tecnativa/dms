@@ -631,8 +631,7 @@ class DmsDirectory(models.Model):
         # Hack to prevent error related to mail_message parent not exists in some cases
         ctx = dict(self.env.context).copy()
         ctx.update({"default_parent_id": False})
-        res = super(DmsDirectory, self.with_context(ctx)).create(vals_list)
-        return res
+        return super(DmsDirectory, self.with_context(ctx)).create(vals_list)
 
     def write(self, vals):
         if vals.get("storage_id"):
