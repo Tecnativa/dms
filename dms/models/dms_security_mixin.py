@@ -77,10 +77,10 @@ class DmsSecurityMixin(models.AbstractModel):
             )
             return
         # Update according to presence when applying ir.rule
-        creatable = self._filter_access_rules("create")
-        readable = self._filter_access_rules("read")
-        unlinkable = self._filter_access_rules("unlink")
-        writeable = self._filter_access_rules("write")
+        creatable = self._filter_access_rules_python("create")
+        readable = self._filter_access_rules_python("read")
+        unlinkable = self._filter_access_rules_python("unlink")
+        writeable = self._filter_access_rules_python("write")
         for one in self:
             one.update(
                 {
@@ -130,7 +130,7 @@ class DmsSecurityMixin(models.AbstractModel):
             domains.append([("res_model", "=", model._name), ("res_id", "=", False)])
             # Check record access in batch too
             group_ids = [i for i in group["res_id"] if i]  # Hack to remove None res_id
-            related_ok = model.browse(group_ids)._filter_access_rules(operation)
+            related_ok = model.browse(group_ids)._filter_access_rules_python(operation)
             if not related_ok:
                 continue
             domains.append(
