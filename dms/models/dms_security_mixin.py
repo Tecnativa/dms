@@ -77,10 +77,10 @@ class DmsSecurityMixin(models.AbstractModel):
             )
             return
         # Update according to presence when applying ir.rule
-        creatable = self._filter_access_rules_python("create")
-        readable = self._filter_access_rules_python("read")
-        unlinkable = self._filter_access_rules_python("unlink")
-        writeable = self._filter_access_rules_python("write")
+        creatable = self._filter_access_rules("create")
+        readable = self._filter_access_rules("read")
+        unlinkable = self._filter_access_rules("unlink")
+        writeable = self._filter_access_rules("write")
         for one in self:
             one.update(
                 {
@@ -225,11 +225,27 @@ class DmsSecurityMixin(models.AbstractModel):
     def _search_permission_write(self, operator, value):
         return self._get_permission_domain(operator, value, "write")
 
+    def _filter_access_rules_python(self, operation):
+        # Only kept to not break inheritance; see next comment
+        result = super()._filter_access_rules_python(operation)
+        # HACK Always fall back to applying rules by SQL.
+        # Upstream `_filter_acccess_rules_python()` doesn't use computed fields
+        # search methods. Thus, it will take the `[('permission_{operation}',
+        # '=', user.id)]` rule literally. Obviously that will always fail
+        # because `self[f"permission_{operation}"]` will always be a `bool`,
+        # while `user.id` will always be an `int`.
+        result |= self._filter_access_rules(operation)
+        return result
+
     @api.model_create_multi
     def create(self, vals_list):
+        # Create as sudo to avoid testing creation permissions before DMS security
+        # groups are attached (otherwise nobody would be able to create)
         res = super(DmsSecurityMixin, self.sudo()).create(vals_list)
-        # res = res.with_user(self.env.user)
+        # Need to flush now, so all groups are stored in DB and the SELECT used
+        # to check access works
         res.flush()
+        # Go back to original user and check we really had creation permission
         res = res.sudo(False)
         res.check_access_rights("create")
         res.check_access_rule("create")
