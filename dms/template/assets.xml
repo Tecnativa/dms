@@ -17,6 +17,10 @@
             <script type="text/javascript" src="/dms/static/src/js/fields/path.js" />
             <script
                 type="text/javascript"
+                src="/dms/static/src/js/widgets/dms_widgets_size.js"
+            />
+            <script
+                type="text/javascript"
                 src="/dms/static/src/js/views/many_drop_target.js"
             />
             <script
