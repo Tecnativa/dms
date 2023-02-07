@@ -42,6 +42,7 @@ class DmsDirectory(models.Model):
     _directory_field = _parent_name
 
     parent_path = fields.Char(index=True)
+    level_depth = fields.Integer(compute="_compute_level_depth", store=True, index=True)
     is_root_directory = fields.Boolean(
         string="Is Root Directory",
         default=False,
@@ -225,6 +226,12 @@ class DmsDirectory(models.Model):
             result = self_filter
         return result
 
+    @api.depends("parent_id")
+    def _compute_level_depth(self):
+        for item in self:
+            previous_level = item.parent_id.level_depth if item.parent_id else 0
+            item.level_depth = previous_level + 1
+
     def _compute_access_url(self):
         super()._compute_access_url()
         for item in self:
@@ -273,10 +280,13 @@ class DmsDirectory(models.Model):
         return directories
 
     def _get_own_root_directories(self):
+        domain = [("is_hidden", "=", False)]
+        model = self.env["dms.directory"]
+        item = model.search(domain, limit=1, order="level_depth asc")
         return (
-            self.env["dms.directory"]
-            .search([("is_hidden", "=", False), ("parent_id", "=", False)])
-            .ids
+            model.search(domain + [("level_depth", "=", item.level_depth)]).ids
+            if item
+            else []
         )
 
     allowed_model_ids = fields.Many2many(
