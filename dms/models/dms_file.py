@@ -148,6 +148,10 @@ class File(models.Model):
             # Image.MIME provides a dict of mimetypes supported by Pillow,
             # SVG is not present in the dict but is also a supported image format
             # lacking a better solution, it's being added manually
+            print({
+                'one.res_mimetype': one.res_mimetype,
+                'Image.MIME.values()': Image.MIME.values()
+            })
             if one.res_mimetype in (*Image.MIME.values(), "image/svg+xml"):
                 one.image_1920 = one.content
 
