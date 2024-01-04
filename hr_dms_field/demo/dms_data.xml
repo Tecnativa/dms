@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="read_access_hr_employee_group" model="dms.access.group">
+        <field name="name">Everyone for Employee DMS</field>
+        <field name="group_ids" eval="[(4, ref('hr.group_hr_user'))]" />
+        <field name="perm_create" eval="True" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_unlink" eval="True" />
+    </record>
+    <record id="hr_employee_storage" model="dms.storage">
+        <field name="name">Employee Storage</field>
+        <field name="save_type">database</field>
+        <field name="model_ids" eval="[(4, ref('hr.model_hr_employee'))]" />
+    </record>
+    <record id="hr_employee_root_directory" model="dms.directory">
+        <field name="name">Template directory from employees</field>
+        <field name="is_template" eval="True" />
+        <field name="is_root_directory" eval="True" />
+        <field name="parent_id" eval="False" />
+        <field name="storage_id" ref="hr_employee_storage" />
+        <field
+            name="group_ids"
+            eval="[(6, 0, [ref('read_access_hr_employee_group')])]"
+        />
+        <field name="res_model">hr.employee</field>
+    </record>
+    <record id="hr_employee_subdirectory_01" model="dms.directory">
+        <field name="name">Payrolls</field>
+        <field name="is_template" eval="True" />
+        <field name="is_root_directory" eval="False" />
+        <field name="parent_id" ref="hr_employee_root_directory" />
+    </record>
+    <record id="hr_employee_subdirectory_02" model="dms.directory">
+        <field name="name">Contracts</field>
+        <field name="is_template" eval="True" />
+        <field name="is_root_directory" eval="False" />
+        <field name="parent_id" ref="hr_employee_root_directory" />
+    </record>
+</odoo>
