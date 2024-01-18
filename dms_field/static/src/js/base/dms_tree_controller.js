@@ -22,6 +22,10 @@ odoo.define("dms.DmsTreeController", function (require) {
         },
         setParams: function (params) {
             var model = params.modelName;
+            // To be overwritten in hr_dms_field
+            if (model === "hr.employee.public") {
+                model = "hr.employee";
+            }
             var storage_domain = [];
             var directory_domain = [];
             var autocompute_directory = false;
@@ -43,7 +47,6 @@ odoo.define("dms.DmsTreeController", function (require) {
                 autocompute_directory = true;
                 show_storage = false;
             }
-            console.log(params);
             this.params = $.extend(
                 true,
                 {},
@@ -138,6 +141,11 @@ odoo.define("dms.DmsTreeController", function (require) {
                         "count_files",
                         "name",
                         "parent_id",
+                        "icon_url",
+                        "count_total_directories",
+                        "count_total_files",
+                        "size",
+                        "count_elements",
                         "__last_update",
                     ]),
                     domain: this._buildDMSDomain(
@@ -165,6 +173,11 @@ odoo.define("dms.DmsTreeController", function (require) {
                     "count_files",
                     "name",
                     "parent_id",
+                    "icon_url",
+                    "count_total_directories",
+                    "count_total_files",
+                    "size",
+                    "count_elements",
                     "__last_update",
                 ]),
                 domain: this._buildDMSDomain(
@@ -194,6 +207,7 @@ odoo.define("dms.DmsTreeController", function (require) {
                     "is_locked",
                     "is_lock_editor",
                     "extension",
+                    "icon_url",
                     "__last_update",
                 ]),
                 domain: this._buildDMSDomain(
@@ -383,13 +397,11 @@ odoo.define("dms.DmsTreeController", function (require) {
                 perm_create: directory.permission_create,
                 perm_write: directory.permission_write,
                 perm_unlink: directory.permission_unlink,
-
-                thumbnail_link: session.url("/web/image", {
-                    model: "dms.directory",
-                    field: "thumbnail_medium",
-                    unique: directory.__last_update.replace(/[^0-9]/g, ""),
-                    id: directory.id,
-                }),
+                icon_url: directory.icon_url,
+                count_total_directories: directory.count_total_directories,
+                count_total_files: directory.count_total_files,
+                size: directory.size,
+                count_elements: directory.count_elements,
             });
             if (
                 storage &&
@@ -434,12 +446,7 @@ odoo.define("dms.DmsTreeController", function (require) {
                     file.permission_write && (!file.is_locked || file.is_lock_editor),
                 perm_unlink:
                     file.permission_unlink && (!file.is_locked || file.is_lock_editor),
-                thumbnail_link: session.url("/web/image", {
-                    model: "dms.file",
-                    field: "thumbnail_medium",
-                    unique: file.__last_update.replace(/[^0-9]/g, ""),
-                    id: file.id,
-                }),
+                icon_url: file.icon_url,
             });
             var dt = this._makeDataPoint({
                 data: data,
@@ -456,7 +463,6 @@ odoo.define("dms.DmsTreeController", function (require) {
         _onDMSPreviewFile: function (ev) {
             var record = this._getDataPoint(ev.data.id, {raw: true});
             var fieldName = "content";
-            console.log(record.data);
             var file_mimetype = record.data.mimetype;
             var type = file_mimetype.split("/").shift();
             if (

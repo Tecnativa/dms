@@ -11,10 +11,8 @@
     "website": "https://github.com/OCA/dms",
     "depends": ["dms"],
     "data": [
-        "wizards/dms_add_directory_record.xml",
         "views/dms_storage.xml",
         "views/dms_directory.xml",
-        "security/ir.model.access.csv",
     ],
     "assets": {
         "web.assets_backend": [

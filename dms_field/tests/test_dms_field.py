@@ -1,4 +1,5 @@
 # Copyright 2020 Creu Blanca
+# Copyright 2024 Tecnativa - Víctor Martínez
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
 from odoo.exceptions import ValidationError
@@ -9,20 +10,11 @@ class TestDmsField(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.access_group = cls.env["dms.access.group"].create(
-            {
-                "name": "Access Group",
-                "group_ids": [(4, cls.env.ref("base.group_user").id)],
-            }
-        )
-        cls.storage = cls.env["dms.storage"].create(
-            {
-                "name": "DMS Storage",
-                "model_ids": [(4, cls.env.ref("base.model_res_partner").id)],
-                "save_type": "database",
-                "field_default_group_id": cls.access_group.id,
-            }
-        )
+        cls.access_group = cls.env.ref("dms_field.demo_access_group")
+        cls.storage = cls.env.ref("dms_field.storage_demo")
+        cls.directory = cls.env.ref("dms_field.demo_template_directory_01")
+        cls.subdirectory_1 = cls.env.ref("dms_field.demo_template_directory_02")
+        cls.subdirectory_2 = cls.env.ref("dms_field.demo_template_directory_03")
         cls.partner = cls.env["res.partner"].create({"name": "DEMO Partner"})
 
     def _create_directory_vals(self, record):
@@ -86,15 +78,22 @@ class TestDmsField(TransactionCase):
         with self.assertRaises(ValidationError):
             self.storage.write({"model_ids": [(5, False)]})
 
-    def test_creation_wizard(self):
+    def test_creation_process(self):
         self.assertFalse(self.partner.dms_directory_ids)
-        self.env["dms.add.directory.record"].with_context(
-            default_res_id=self.partner.id,
-            default_res_model=self.partner._name,
-        ).create({"storage_id": self.storage.id}).create_directory()
+        storage_model = self.env["dms.storage"].with_context(
+            res_model=self.partner._name, res_id=self.partner.id
+        )
+        storage_model.create_directory_from_dms_file()
         self.partner.refresh()
-        self.assertTrue(self.partner.dms_directory_ids)
-        self.assertEqual(self.storage, self.partner.dms_directory_ids.storage_id)
+        self.assertEqual(
+            self.partner.dms_directory_ids.name,
+            "%s (%s)" % (self.partner._description, self.partner.display_name),
+        )
+        child_names = self.partner.dms_directory_ids.mapped("child_directory_ids.name")
+        self.assertIn(self.subdirectory_1.name, child_names)
+        self.assertIn(self.subdirectory_2.name, child_names)
+        with self.assertRaises(ValidationError):
+            storage_model.create_directory_from_dms_file()
 
     def test_js_tree(self):
         self.assertTrue(

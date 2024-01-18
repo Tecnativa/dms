@@ -1,4 +1,5 @@
 # Copyright 2020 Creu Blanca
+# Copyright 2024 Tecnativa - Víctor Martínez
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
 from odoo import _, api, fields, models
@@ -9,16 +10,23 @@ from odoo.osv import expression
 class DmsDirectory(models.Model):
     _inherit = "dms.directory"
 
+    is_template = fields.Boolean(
+        string="Is a template?",
+        help="""We can set a directory (and subdirectories) to be set when creating
+        the directory related to a record (to a partner for example).""",
+    )
     parent_id = fields.Many2one(default=lambda self: self._default_parent())
 
     @api.model
     def _default_parent(self):
         return self.env.context.get("default_parent_directory_id", False)
 
-    @api.constrains("res_id", "is_root_directory", "storage_id", "res_model")
+    @api.constrains(
+        "res_id", "is_root_directory", "storage_id", "res_model", "is_template"
+    )
     def _check_resource(self):
         for directory in self:
-            if directory.storage_id.save_type == "attachment":
+            if directory.is_template or directory.storage_id.save_type == "attachment":
                 continue
             if (
                 directory.is_root_directory

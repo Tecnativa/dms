@@ -6,6 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0\n"
 "Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-18 13:15+0000\n"
+"PO-Revision-Date: 2024-01-18 13:15+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -33,11 +35,6 @@ msgid "Actions"
 msgstr ""
 
 #. module: dms_field
-#: model:ir.model,name:dms_field.model_dms_add_directory_record
-msgid "Add Directory to a DMS Record"
-msgstr ""
-
-#. module: dms_field
 #. openerp-web
 #: code:addons/dms_field/static/src/js/base/dms_tree_renderer.js:0
 #, python-format
@@ -49,13 +46,6 @@ msgstr ""
 #: code:addons/dms_field/static/src/js/base/dms_tree_renderer.js:0
 #, python-format
 msgid "Add File: "
-msgstr ""
-
-#. module: dms_field
-#. openerp-web
-#: code:addons/dms_field/static/src/js/base/dms_tree_renderer.js:0
-#, python-format
-msgid "Add new root directory"
 msgstr ""
 
 #. module: dms_field
@@ -96,23 +86,6 @@ msgstr ""
 #: code:addons/dms_field/static/src/js/base/dms_tree_renderer.js:0
 #, python-format
 msgid "Create directory"
-msgstr ""
-
-#. module: dms_field
-#. openerp-web
-#: code:addons/dms_field/static/src/xml/preview.xml:0
-#, python-format
-msgid "Create:"
-msgstr ""
-
-#. module: dms_field
-#: model:ir.model.fields,field_description:dms_field.field_dms_add_directory_record__create_uid
-msgid "Created by"
-msgstr ""
-
-#. module: dms_field
-#: model:ir.model.fields,field_description:dms_field.field_dms_add_directory_record__create_date
-msgid "Created on"
 msgstr ""
 
 #. module: dms_field
@@ -171,7 +144,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:dms_field.field_change_password_wizard__dms_directory_ids
 #: model:ir.model.fields,field_description:dms_field.field_decimal_precision__dms_directory_ids
 #: model:ir.model.fields,field_description:dms_field.field_dms_access_group__dms_directory_ids
-#: model:ir.model.fields,field_description:dms_field.field_dms_add_directory_record__dms_directory_ids
 #: model:ir.model.fields,field_description:dms_field.field_dms_category__dms_directory_ids
 #: model:ir.model.fields,field_description:dms_field.field_dms_directory__dms_directory_ids
 #: model:ir.model.fields,field_description:dms_field.field_dms_file__dms_directory_ids
@@ -341,13 +313,6 @@ msgid "Delete"
 msgstr ""
 
 #. module: dms_field
-#. openerp-web
-#: code:addons/dms_field/static/src/xml/preview.xml:0
-#, python-format
-msgid "Delete:"
-msgstr ""
-
-#. module: dms_field
 #: code:addons/dms_field/models/dms_directory.py:0
 #, python-format
 msgid "Directories of this storage must be related to a record"
@@ -365,16 +330,6 @@ msgid "Directory %s must be root in order to be related to a record"
 msgstr ""
 
 #. module: dms_field
-#: model:ir.model.fields,field_description:dms_field.field_dms_add_directory_record__display_name
-msgid "Display Name"
-msgstr ""
-
-#. module: dms_field
-#: model_terms:ir.ui.view,arch_db:dms_field.dms_add_directory_record_form_view
-msgid "Dms Add Directory Record"
-msgstr ""
-
-#. module: dms_field
 #: model:ir.actions.act_window,name:dms_field.dms_storage_act_window
 #: model:ir.ui.menu,name:dms_field.dms_storage_menu
 msgid "Documents"
@@ -384,6 +339,7 @@ msgstr ""
 #. openerp-web
 #: code:addons/dms_field/static/src/js/base/dms_tree_renderer.js:0
 #: code:addons/dms_field/static/src/js/base/dms_tree_renderer.js:0
+#: code:addons/dms_field/static/src/xml/preview.xml:0
 #, python-format
 msgid "Download"
 msgstr ""
@@ -417,6 +373,13 @@ msgid "Edit the selected node"
 msgstr ""
 
 #. module: dms_field
+#. openerp-web
+#: code:addons/dms_field/static/src/xml/preview.xml:0
+#, python-format
+msgid "Elements:"
+msgstr ""
+
+#. module: dms_field
 #: model:dms.access.group,name:dms_field.demo_access_group
 msgid "Everyone for Partner DMS"
 msgstr ""
@@ -429,8 +392,10 @@ msgid "F2"
 msgstr ""
 
 #. module: dms_field
-#: model:ir.model.fields,field_description:dms_field.field_dms_storage__field_default_group_id
-msgid "Field Default Group"
+#. openerp-web
+#: code:addons/dms_field/static/src/xml/preview.xml:0
+#, python-format
+msgid "Files:"
 msgstr ""
 
 #. module: dms_field
@@ -441,8 +406,8 @@ msgid "HOME"
 msgstr ""
 
 #. module: dms_field
-#: model:ir.model.fields,field_description:dms_field.field_dms_add_directory_record__id
-msgid "ID"
+#: model:ir.model.fields,field_description:dms_field.field_dms_directory__is_template
+msgid "Is a template?"
 msgstr ""
 
 #. module: dms_field
@@ -467,21 +432,6 @@ msgid "Keyboard Shortcuts"
 msgstr ""
 
 #. module: dms_field
-#: model:ir.model.fields,field_description:dms_field.field_dms_add_directory_record____last_update
-msgid "Last Modified on"
-msgstr ""
-
-#. module: dms_field
-#: model:ir.model.fields,field_description:dms_field.field_dms_add_directory_record__write_uid
-msgid "Last Updated by"
-msgstr ""
-
-#. module: dms_field
-#: model:ir.model.fields,field_description:dms_field.field_dms_add_directory_record__write_date
-msgid "Last Updated on"
-msgstr ""
-
-#. module: dms_field
 #. openerp-web
 #: code:addons/dms_field/static/src/xml/dialogs.xml:0
 #, python-format
@@ -493,13 +443,6 @@ msgstr ""
 #: code:addons/dms_field/static/src/xml/dialogs.xml:0
 #, python-format
 msgid "Move up one node"
-msgstr ""
-
-#. module: dms_field
-#. openerp-web
-#: code:addons/dms_field/static/src/xml/preview.xml:0
-#, python-format
-msgid "Name:"
 msgstr ""
 
 #. module: dms_field
@@ -545,25 +488,6 @@ msgid "Paste"
 msgstr ""
 
 #. module: dms_field
-#: model:ir.model.fields,field_description:dms_field.field_dms_add_directory_record__storage_ids
-msgid "Possible storages"
-msgstr ""
-
-#. module: dms_field
-#. openerp-web
-#: code:addons/dms_field/static/src/xml/preview.xml:0
-#, python-format
-msgid "Preview/download"
-msgstr ""
-
-#. module: dms_field
-#. openerp-web
-#: code:addons/dms_field/static/src/xml/preview.xml:0
-#, python-format
-msgid "Read:"
-msgstr ""
-
-#. module: dms_field
 #. openerp-web
 #: code:addons/dms_field/static/src/xml/controls.xml:0
 #, python-format
@@ -578,20 +502,17 @@ msgid "Rename"
 msgstr ""
 
 #. module: dms_field
-#: model:ir.model.fields,field_description:dms_field.field_dms_add_directory_record__res_id
-msgid "Res"
-msgstr ""
-
-#. module: dms_field
-#: model:ir.model.fields,field_description:dms_field.field_dms_add_directory_record__res_model
-msgid "Res Model"
-msgstr ""
-
-#. module: dms_field
 #. openerp-web
 #: code:addons/dms_field/static/src/xml/controls.xml:0
 #, python-format
 msgid "Show Help"
+msgstr ""
+
+#. module: dms_field
+#. openerp-web
+#: code:addons/dms_field/static/src/xml/preview.xml:0
+#, python-format
+msgid "Size:"
 msgstr ""
 
 #. module: dms_field
@@ -602,7 +523,6 @@ msgstr ""
 
 #. module: dms_field
 #: model:ir.model,name:dms_field.model_dms_storage
-#: model:ir.model.fields,field_description:dms_field.field_dms_add_directory_record__storage_id
 msgid "Storage"
 msgstr ""
 
@@ -623,6 +543,18 @@ msgstr ""
 
 #. module: dms_field
 #. openerp-web
+#: code:addons/dms_field/static/src/xml/preview.xml:0
+#, python-format
+msgid "Subdirectories:"
+msgstr ""
+
+#. module: dms_field
+#: model_terms:ir.ui.view,arch_db:dms_field.search_dms_directory
+msgid "Templates"
+msgstr ""
+
+#. module: dms_field
+#. openerp-web
 #: code:addons/dms_field/static/src/xml/dialogs.xml:0
 #, python-format
 msgid ""
@@ -634,6 +566,24 @@ msgstr ""
 #: code:addons/dms_field/models/dms_storage.py:0
 #, python-format
 msgid "There are directories not associated to a record"
+msgstr ""
+
+#. module: dms_field
+#: code:addons/dms_field/models/dms_storage.py:0
+#, python-format
+msgid "There are no defined directory templates."
+msgstr ""
+
+#. module: dms_field
+#: code:addons/dms_field/models/dms_storage.py:0
+#, python-format
+msgid "There is already a linked directory created."
+msgstr ""
+
+#. module: dms_field
+#: code:addons/dms_field/models/dms_storage.py:0
+#, python-format
+msgid "There is no storage linked to this model"
 msgstr ""
 
 #. module: dms_field
@@ -654,10 +604,10 @@ msgid "View Type"
 msgstr ""
 
 #. module: dms_field
-#. openerp-web
-#: code:addons/dms_field/static/src/xml/preview.xml:0
-#, python-format
-msgid "Write:"
+#: model:ir.model.fields,help:dms_field.field_dms_directory__is_template
+msgid ""
+"We can set a directory (and subdirectories) to be set when creating\n"
+"        the directory related to a record (to a partner for example)."
 msgstr ""
 
 #. module: dms_field
@@ -677,24 +627,4 @@ msgstr ""
 msgid ""
 "You can open a context menu by right-clicking on any node. This\n"
 "                        contains further options for interacting with the node."
-msgstr ""
-
-#. module: dms_field
-#. openerp-web
-#: code:addons/dms_field/static/src/xml/preview.xml:0
-#: code:addons/dms_field/static/src/xml/preview.xml:0
-#: code:addons/dms_field/static/src/xml/preview.xml:0
-#: code:addons/dms_field/static/src/xml/preview.xml:0
-#, python-format
-msgid "no"
-msgstr ""
-
-#. module: dms_field
-#. openerp-web
-#: code:addons/dms_field/static/src/xml/preview.xml:0
-#: code:addons/dms_field/static/src/xml/preview.xml:0
-#: code:addons/dms_field/static/src/xml/preview.xml:0
-#: code:addons/dms_field/static/src/xml/preview.xml:0
-#, python-format
-msgid "yes"
 msgstr ""

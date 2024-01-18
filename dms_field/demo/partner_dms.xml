@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-
-
     <record id="demo_access_group" model="dms.access.group">
         <field name="name">Everyone for Partner DMS</field>
         <field name="group_ids" eval="[(4, ref('base.group_user'))]" />
@@ -13,7 +11,27 @@
         <field name="name">Partner Storage</field>
         <field name="save_type">database</field>
         <field name="model_ids" eval="[(4, ref('base.model_res_partner'))]" />
-        <field name="field_default_group_id" ref="demo_access_group" />
+    </record>
+    <record id="demo_template_directory_01" model="dms.directory">
+        <field name="name">Template directory from partners</field>
+        <field name="is_template" eval="True" />
+        <field name="is_root_directory" eval="True" />
+        <field name="parent_id" eval="False" />
+        <field name="storage_id" ref="storage_demo" />
+        <field name="group_ids" eval="[(6, 0, [ref('demo_access_group')])]" />
+        <field name="res_model">res.partner</field>
+    </record>
+    <record id="demo_template_directory_02" model="dms.directory">
+        <field name="name">Subdirectory 1</field>
+        <field name="is_template" eval="True" />
+        <field name="is_root_directory" eval="False" />
+        <field name="parent_id" ref="demo_template_directory_01" />
+    </record>
+    <record id="demo_template_directory_03" model="dms.directory">
+        <field name="name">Subdirectory 2</field>
+        <field name="is_template" eval="True" />
+        <field name="is_root_directory" eval="False" />
+        <field name="parent_id" ref="demo_template_directory_01" />
     </record>
     <record id="view_partner_form" model="ir.ui.view">
         <field name="name">res.partner.form</field>
