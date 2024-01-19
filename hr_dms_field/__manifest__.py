@@ -12,4 +12,9 @@
     "data": ["views/hr_employee_view.xml"],
     "demo": ["demo/dms_data.xml"],
     "maintainers": ["victoralmau"],
+    "assets": {
+        "web.assets_backend": [
+            "hr_dms_field/static/src/js/**/*",
+        ],
+    },
 }

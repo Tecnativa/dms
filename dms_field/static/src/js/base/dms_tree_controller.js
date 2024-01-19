@@ -20,12 +20,12 @@ odoo.define("dms.DmsTreeController", function (require) {
             this._super.apply(this, arguments);
             this.setParams(params);
         },
+        sanitizeDMSModel: function (model) {
+            return model;
+        },
         setParams: function (params) {
             var model = params.modelName;
-            // To be overwritten in hr_dms_field
-            if (model === "hr.employee.public") {
-                model = "hr.employee";
-            }
+            model = this.sanitizeDMSModel(model);
             var storage_domain = [];
             var directory_domain = [];
             var autocompute_directory = false;
