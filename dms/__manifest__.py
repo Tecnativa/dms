@@ -15,6 +15,10 @@
         "http_routing",
         "portal",
         "mail_preview_base",
+        "sale",
+        "hr",
+        "account",
+        "contacts",
     ],
     "data": [
         "security/security.xml",
@@ -52,8 +56,8 @@
     "demo": [
         "demo/res_users.xml",
         "demo/access_group.xml",
-        "demo/category.xml",
-        "demo/tag.xml",
+        # "demo/category.xml",
+        # "demo/tag.xml",
         "demo/storage.xml",
         "demo/directory.xml",
         "demo/file.xml",
