@@ -724,7 +724,25 @@ class DmsDirectory(models.Model):
                 records.modified(["group_ids"])
             records.flush_recordset()
         else:
-            res = super().write(vals)
+            # Use case: Create/Delete files if you do not have write permissions
+            if (
+                list(vals.keys())
+                == [
+                    "file_ids",
+                ]
+                and not self.permission_write
+            ):
+                res = False
+                file_model = self.env["dms.file"]
+                for file_val in vals["file_ids"]:
+                    key_0 = file_val[0]
+                    if key_0 == 0:
+                        res = file_model.create(file_val[2])
+                    if key_0 == 2:
+                        res = file_model.browse(file_val[1]).unlink()
+                return res
+            else:
+                res = super().write(vals)
         return res
 
     def unlink(self):
