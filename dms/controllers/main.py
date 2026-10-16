@@ -6,7 +6,7 @@ import json
 import unicodedata
 
 from odoo import http
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, ValidationError
 from odoo.http import request
 
 from odoo.addons.web.controllers.binary import clean
@@ -57,6 +57,8 @@ class OnboardingController(http.Controller):
                         )
                     }
                 )
+            except ValidationError as error:
+                args.append({"error": error.args[0]})
             except Exception:
                 args.append({"error": request.env._("Something horrible happened")})
             else:
