@@ -4,7 +4,6 @@
 # Copyright 2024 Subteno - Timothée Vannier (https://www.subteno.com).
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
-import base64
 import hashlib
 import json
 import logging
@@ -16,6 +15,7 @@ from odoo import api, fields, models, tools
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Domain
 from odoo.tools import consteq, human_size
+from odoo.tools.binary import BinaryBytes
 from odoo.tools.mimetypes import guess_mimetype
 
 from ..tools import file
@@ -27,7 +27,7 @@ class DMSFile(models.Model):
     _name = "dms.file"
     _description = "File"
 
-    _inherit = [
+    _inherit = [  # noqa: RUF012
         "portal.mixin",
         "dms.security.mixin",
         "dms.mixins.thumbnail",
@@ -46,7 +46,6 @@ class DMSFile(models.Model):
     )
     directory_id = fields.Many2one(
         comodel_name="dms.directory",
-        string="Directory",
         domain="[('permission_create', '=', True)]",
         context={"dms_directory_show_path": True},
         ondelete="restrict",
@@ -150,10 +149,6 @@ class DMSFile(models.Model):
             ):
                 one.image_1920 = one.content
 
-    def check_access(self, operation):
-        self.mapped("directory_id").check_access(operation)
-        return super().check_access(operation)
-
     def _compute_access_url(self):
         res = super()._compute_access_url()
         for item in self:
@@ -226,21 +221,18 @@ class DMSFile(models.Model):
         if self.storage_id.save_type in ["file", "attachment"]:
             new_vals["content_file"] = self.content
         else:
-            new_vals["content_binary"] = self.content and binary
+            new_vals["content_binary"] = binary and BinaryBytes(binary)
         return new_vals
 
     @api.model
     def _get_binary_max_size(self):
-        return int(
-            self.env["ir.config_parameter"]
-            .sudo()
-            .get_param("dms.binary_max_size", default=25)
-        )
+        return self.env["ir.config_parameter"].sudo().get_int("dms.binary_max_size", 25)
 
     @api.model
     def _get_forbidden_extensions(self):
-        get_param = self.env["ir.config_parameter"].sudo().get_param
-        extensions = get_param("dms.forbidden_extensions", default="")
+        extensions = (
+            self.env["ir.config_parameter"].sudo().get_str("dms.forbidden_extensions")
+        )
         return [extension.strip() for extension in extensions.split(",")]
 
     def _get_icon_placeholder_name(self):
@@ -439,14 +431,13 @@ class DMSFile(models.Model):
     def _compute_extension(self):
         for record in self:
             record.extension = file.guess_extension(
-                record.name, record.mimetype, record.content
+                record.name, record.mimetype, record.content.content
             )
 
     @api.depends("content")
     def _compute_mimetype(self):
         for record in self:
-            binary = base64.b64decode(record.content or "")
-            record.mimetype = guess_mimetype(binary)
+            record.mimetype = guess_mimetype(record.content.content)
 
     @api.depends("size")
     def _compute_human_size(self):
@@ -455,20 +446,15 @@ class DMSFile(models.Model):
 
     @api.depends("content_binary", "content_file", "attachment_id")
     def _compute_content(self):
-        bin_size = self.env.context.get("bin_size", False)
         for record in self:
             if record.content_file:
-                context = {"human_size": True} if bin_size else {"base64": True}
-                record.content = record.with_context(**context).content_file
+                record.content = record.content_file
             elif record.content_binary:
-                record.content = (
-                    record.content_binary
-                    if bin_size
-                    else base64.b64encode(record.content_binary)
-                )
+                record.content = record.content_binary
             elif record.attachment_id:
-                context = {"human_size": True} if bin_size else {"base64": True}
-                record.content = record.with_context(**context).attachment_id.datas
+                record.content = record.attachment_id.raw
+            else:
+                record.content = False
 
     @api.depends("content_binary", "content_file")
     def _compute_save_type(self):
@@ -557,7 +543,7 @@ class DMSFile(models.Model):
         updates = defaultdict(set)
         for record in self:
             values = self._get_content_inital_vals()
-            binary = base64.b64decode(record.content or "")
+            binary = record.content.content
             values = record._update_content_vals(values, binary)
             updates[tools.frozendict(values)].add(record.id)
         for vals, ids in updates.items():
@@ -584,7 +570,7 @@ class DMSFile(models.Model):
                 .create(
                     {
                         "name": vals["name"],
-                        "datas": vals["content"],
+                        "raw": vals["content"],
                         "res_model": directory.res_model,
                         "res_id": directory.res_id,
                     }

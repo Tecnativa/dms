@@ -9,18 +9,18 @@ import {
     createFileDropZoneExtension,
     createFileUploadExtension,
 } from "./dms_file_upload.esm";
+import {FileListController} from "./file_list_controller.esm";
 import {FileListRenderer} from "./file_list_renderer.esm";
-import {ListController} from "@web/views/list/list_controller";
 import {listView} from "@web/views/list/list_view";
 import {patch} from "@web/core/utils/patch";
 import {registry} from "@web/core/registry";
 
 patch(FileListRenderer.prototype, createFileDropZoneExtension());
-patch(ListController.prototype, createFileUploadExtension());
-FileListRenderer.template = "dms.ListRenderer";
+patch(FileListController.prototype, createFileUploadExtension());
 
 export const FileListView = {
     ...listView,
+    Controller: FileListController,
     buttonTemplate: "dms.ListButtons",
     Renderer: FileListRenderer,
 };

@@ -4,84 +4,35 @@
 //  **********************************************************************************/
 import {Attachment} from "@mail/core/common/attachment_model";
 import {patch} from "@web/core/utils/patch";
+import {url} from "@web/core/utils/urls";
 
+// Records of dms.file are shown in the file viewer as if they were attachments:
+// their content must be served from the dms.file record, not from ir.attachment.
 patch(Attachment.prototype, {
-    _handleImage() {
-        if (this.model_name && this.model_name === "dms.file") {
-            return `/web/content?id=${this.id}&field=content&model=dms.file&filename_field=name&download=false`;
-        }
-        return `/web/image/${this.id}?signature=${this.checksum}`;
+    get isDmsFile() {
+        return this.model_name === "dms.file";
     },
-    _handlePdf() {
-        if (this.model_name && this.model_name === "dms.file") {
-            return (
-                "/web/content?id=" +
-                this.id +
-                "&field=content&model=dms.file" +
-                "&filename_field=name"
-            );
+    get urlRoute() {
+        if (this.isDmsFile) {
+            return "/web/content";
         }
-        const pdf_lib = `/web/static/lib/pdfjs/web/viewer.html?file=`;
-        if (
-            !this.accessToken &&
-            this.originThread &&
-            this.originThread.model === "mail.channel"
-        ) {
-            return `${pdf_lib}/mail/channel/${this.originThread.id}/attachment/${this.id}#pagemode=none`;
-        }
-        const accessToken = this.accessToken
-            ? `?access_token%3D${this.accessToken}`
-            : "";
-        return `${pdf_lib}/web/content/${this.id}${accessToken}#pagemode=none`;
+        return super.urlRoute;
     },
-    _handleYoutube() {
-        const urlArr = this.url.split("/");
-        let token = urlArr[urlArr.length - 1];
-        if (token.includes("watch")) {
-            token = token.split("v=")[1];
-            const amp = token.indexOf("&");
-            if (amp !== -1) {
-                token = token.substring(0, amp);
-            }
+    get urlQueryParams() {
+        if (this.isDmsFile) {
+            return {
+                model: "dms.file",
+                id: this.id,
+                field: "content",
+                filename_field: "name",
+            };
         }
-        return `https://www.youtube.com/embed/${token}`;
+        return super.urlQueryParams;
     },
     get defaultSource() {
-        if (this.isImage) {
-            return this._handleImage();
+        if (this.isDmsFile && this.isText) {
+            return url(this.urlRoute, this.urlQueryParams);
         }
-        if (this.isPdf) {
-            return this._handlePdf();
-        }
-        if (this.isUrlYoutube) {
-            return this._handleYoutube();
-        }
-        if (
-            !this.accessToken &&
-            this.originThread &&
-            this.originThread.model === "mail.channel"
-        ) {
-            return `/mail/channel/${this.originThread.id}/attachment/${this.id}`;
-        }
-        const accessToken = this.accessToken ? `?access_token=${this.accessToken}` : "";
-
-        if (this.model_name && this.model_name === "dms.file") {
-            return `/web/content?id=${this.id}&field=content&model=dms.file&filename_field=name`;
-        }
-        return `/web/content/${this.id}${accessToken}`;
-    },
-    get downloadUrl() {
-        if (
-            !this.accessToken &&
-            this.originThread &&
-            this.originThread.model === "mail.channel"
-        ) {
-            return `/mail/channel/${this.originThread.id}/attachment/${this.id}?download=true`;
-        }
-        if (this.model_name && this.model_name === "dms.file") {
-            return `/web/content?id=${this.id}&field=content&model=dms.file&filename_field=name&download=true`;
-        }
-        const accessToken = this.accessToken ? `access_token=${this.accessToken}&` : "";
-        return `/web/content/ir.attachment/${this.id}/datas?${accessToken}download=true`;
+        return super.defaultSource;
     },
 });
